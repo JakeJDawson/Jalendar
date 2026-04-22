@@ -1,0 +1,7 @@
+POST http://localhost:8080/api/tasks
+Content-Type: application/json
+
+{
+    "title": "Test Task",
+    "description": "Linked to user"
+}
