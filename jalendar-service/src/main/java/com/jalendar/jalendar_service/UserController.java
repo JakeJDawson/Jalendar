@@ -15,8 +15,11 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public User register(@RequestBody User user) {
-        user.setPassword(encoder.encode(user.getPassword()));
+    public User register(@RequestBody UserDTO dto) {
+        User user = new User();
+        user.setEmail(dto.getEmail());
+        user.setPassword(dto.getPassword());
+        
         return userRepo.save(user);
     }
 }
