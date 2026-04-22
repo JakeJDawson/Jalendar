@@ -8,6 +8,14 @@
     Password: <input type="password" id="password"><br>
     <button type="submit">Register</button>
 </form>
+<form id="taskForm">
+    Title: <input type="text" id="title"><br>
+    Description: <input type="text" id="description"><br>
+    <button type="submit">Create Task</button>
+</form>
+
+<h2>Tasks</h2>
+<ul id="taskList"></ul>
 
 <script>
 document.getElementById("registerForm").onsubmit = async (e) => {
@@ -28,6 +36,37 @@ document.getElementById("registerForm").onsubmit = async (e) => {
         alert("Error");
     }
 };
+
+document.getElementById("taskForm").onsubmit = async (e) => {
+    e.preventDefault();
+
+    const res = await fetch("/api/tasks?userID=1", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"}, 
+        body: JSON.stringify({
+            title: document.getElementById("title").value,
+            description: document.getElementById("description").value
+        })
+    });
+
+    loadTasks();
+};
+
+async function loadTasks() {
+    const res = await fetch("/api/tasks");
+    const tasks = await res.json();
+
+    const list = document.getElementById("taskList");
+    list.innerHTML = "";
+
+    tasks.forEach(task => {
+        const li = document.createElement("li");
+        li.textContent = task.title + " - " + task.description;
+        list.appendChild(li);
+    });
+}
+
+loadTasks();
 </script>
 
 </body>
