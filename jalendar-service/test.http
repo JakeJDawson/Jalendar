@@ -1,7 +1,7 @@
-POST http://localhost:8080/api/tasks
+POST http://localhost:8080/api/tasks?userID=2
 Content-Type: application/json
 
 {
-    "title": "Test Task",
-    "description": "Linked to user"
+    "title": "User 2 Task",
+    "description": "Now dynamic"
 }

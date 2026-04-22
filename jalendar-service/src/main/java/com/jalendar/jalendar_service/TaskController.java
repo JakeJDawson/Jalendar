@@ -20,8 +20,8 @@ public class TaskController {
 
     // CREATE
     @PostMapping
-    public Task create(@RequestBody Task task) {
-        User user = userRepo.findById(1L)
+    public Task create(@RequestParam Long userID, @RequestBody Task task) {
+        User user = userRepo.findById(userID)
             .orElseThrow(() -> new RuntimeException("User not found"));
         task.setUser(user);
         return repo.save(task);
