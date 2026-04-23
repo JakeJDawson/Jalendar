@@ -20,17 +20,22 @@ public class TaskController {
 
     // CREATE
     @PostMapping
-    public Task create(@RequestParam Long userID, @RequestBody Task task) {
-        User user = userRepo.findById(userID)
-            .orElseThrow(() -> new RuntimeException("User not found"));
-        task.setUser(user);
-        return repo.save(task);
+    public Task create(@RequestParam(required = true) Long userID,
+        @RequestBody Task task) {
+            if(userID == null) {
+                throw new RuntimeException("User must be logged in!");
+            }
+
+            User user = userRepo.findById(userID)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+            task.setUser(user);
+            return repo.save(task);
     }
 
     // READ ALL
     @GetMapping
-    public List<Task> getAll() {
-        return repo.findAll();
+    public List<Task> getByUser(@RequestParam Long userID) {
+        return repo.findByUserId(userID);
     }
 
     // READ ONE

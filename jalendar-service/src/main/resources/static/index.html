@@ -8,6 +8,13 @@
     Password: <input type="password" id="password"><br>
     <button type="submit">Register</button>
 </form>
+<h2>Login</h2>
+<form id="loginForm">
+    Email: <input type="text" id="loginEmail"><br>
+    Password: <input type="password" id="loginPassword"><br>
+    <button type="submit">Login</button>
+</form>
+<h2>Create Task</h2>
 <form id="taskForm">
     Title: <input type="text" id="title"><br>
     Description: <input type="text" id="description"><br>
@@ -31,16 +38,54 @@ document.getElementById("registerForm").onsubmit = async (e) => {
     });
 
     if (res.ok) {
-        alert("User registered");
+        const user = await res.json();
+
+        localStorage.setItem("userID", user.id);
+
+        loadTasks();
+
+        alert("User registered with ID: " + user.id);
     } else {
         alert("Error");
+    }
+};
+
+document.getElementById("loginForm").onsubmit = async (e) => {
+    e.preventDefault();
+
+    const res = await fetch("/api/users/login", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"}, 
+        body: JSON.stringify({
+            email: document.getElementById("loginEmail").value,
+            password: document.getElementById("loginPassword").value
+        })
+    });
+
+    if (res.ok) {
+        const user = await res.json();
+
+        localStorage.setItem("userID", user.id);
+
+        loadTasks();
+
+        alert("Logged in as user: " + user.id);
+    } else {
+        alert("Login failed!");
     }
 };
 
 document.getElementById("taskForm").onsubmit = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("/api/tasks?userID=1", {
+    const userID = localStorage.getItem("userID");
+
+    if(!userID) {
+        alert("Please register or login first!");
+        return;
+    }
+
+    const res = await fetch(`/api/tasks?userID=${userID}`, {
         method: "POST",
         headers: {"Content-Type": "application/json"}, 
         body: JSON.stringify({
@@ -53,7 +98,14 @@ document.getElementById("taskForm").onsubmit = async (e) => {
 };
 
 async function loadTasks() {
-    const res = await fetch("/api/tasks");
+    const userID = localStorage.getItem("userID");
+
+    if(!userID) {
+        document.getElementById("taskList").innerHTML = "";
+        return;
+    }
+
+    const res = await fetch(`/api/tasks?userID=${userID}`);
     const tasks = await res.json();
 
     const list = document.getElementById("taskList");
@@ -65,8 +117,9 @@ async function loadTasks() {
         list.appendChild(li);
     });
 }
-
-loadTasks();
+if(localStorage.getItem("userID")) {
+    loadTasks();
+}
 </script>
 
 </body>

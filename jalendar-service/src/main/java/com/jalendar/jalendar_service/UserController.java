@@ -6,7 +6,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
-    
     private final UserRepository userRepo;
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -21,5 +20,20 @@ public class UserController {
         user.setPassword(dto.getPassword());
         
         return userRepo.save(user);
+    }
+
+    @PostMapping("/login")
+    public User login(@RequestBody UserDTO dto) {
+        User user = userRepo.findByEmail(dto.getEmail());
+
+        if(user == null) {
+            throw new RuntimeException("User not found!");
+        }
+
+        if(!user.getPassword().equals(dto.getPassword())) {
+            throw new RuntimeException("Password is incorrect!");
+        }
+
+        return user;
     }
 }
