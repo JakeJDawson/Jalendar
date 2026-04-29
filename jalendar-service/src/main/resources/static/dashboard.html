@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<!-- Navigation to the areas I've created. Not the cleanest but I needed
+    something for the time being. -->
+<nav>
+    <a href="/register.html">Register</a>
+    <a href="/login.html">Login</a>
+    <a href="/dashboard.html">Dashboard</a>
+</nav>
+
+<!-- Adds a button to allow the user to log out. -->
+<button onclick="logout()">Logout</button>
+<!-- Displays the current user. This may be dumb, so I may remove it later, but
+    as it is helping me troubleshoot, it stays for now. -->
+<p id="currentUser"></p>
+
+<!-- Just the simple HTML display for creating a task. I think I'm going
+    to transition the frontend to React at some point, so I'm not sure how
+    temporary this is, but I also have never used React so I may leave it. -->
+<h2>Create Task</h2>
+<form id="taskForm">
+    Title: <input type="text" id="title"><br>
+    Description: <input type="text" id="description"><br>
+    <button type="submit">Create Task</button>
+</form>
+
+<!-- This should just display a list of all tasks associated with the current
+    user. While I don't actually want it to be this way in the end, it does
+    help with debugging at this stage. -->
+<h2>Tasks</h2>
+<ul id="taskList"></ul>
+
+<script>
+    /**
+     * This simply kicks the user back to the login page if they try to
+     * manually redirect themselves here.
+     */
+    const userID = localStorage.getItem("userID");
+    if(!userID) { window.location.href = "/login.html"; }
+
+    // The JavaScript to add functionality to the earlier HTML for tasks.
+    document.getElementById("taskForm").onsubmit = async (e) => {
+        e.preventDefault();
+
+        const res = await fetch(`/api/tasks?userID=${userID}`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"}, 
+            body: JSON.stringify({
+                title: document.getElementById("title").value,
+                description: document.getElementById("description").value
+            })
+        });
+
+        // Refreshes the displayed tasks to show the new one.
+        loadTasks();
+    };
+
+    // Short function to reload the displayed tasks after the list is changed.
+    async function loadTasks() {
+
+        const res = await fetch(`/api/tasks?userID=${userID}`);
+        const tasks = await res.json();
+
+        const list = document.getElementById("taskList");
+        list.innerHTML = "";
+
+        tasks.forEach(task => {
+            const li = document.createElement("li");
+            li.textContent = task.title + " - " + task.description;
+            list.appendChild(li);
+        });
+    }
+
+    // Adds the functionality to the logout button.
+    function logout() {
+        localStorage.removeItem("userID");
+        updateCurrentUser();
+        alert("Logged out successfully!");
+        window.location.href = "/login.html";
+    }
+
+    /**
+     * This function exists because I was previously using one large HTML file
+     * for all of the functionality of this project. I'm currently splitting it
+     * up, so this really isn't all that necessary, but it was very helpful for
+     * debugging, and I want to leave it here for now, just in case.
+     */
+    function updateCurrentUser() {
+        const display = document.getElementById("currentUser");
+
+        if(userID) {
+            display.textContent = "Logged in as user: " + userID;
+        } else {
+            display.textContent = "Not currently logged in!";
+        }
+    }
+
+    /**
+     * Forces the window to display tasks and the current user without user
+     * interaction.
+     */
+    window.onload = () => {
+        updateCurrentUser();
+
+        if(localStorage.getItem("userID")) {
+            loadTasks();
+        }
+    }
+</script>
+
+</body>
+</html>

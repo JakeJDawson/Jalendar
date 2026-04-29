@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<!-- Navigation to the areas I've created. Not the cleanest but I needed
+    something for the time being. -->
+<nav>
+    <a href="/register.html">Register</a>
+    <a href="/login.html">Login</a>
+    <a href="/dashboard.html">Dashboard</a>
+</nav>
+
+<!-- Just the simple HTML display for the Login option. I think I'm going
+    to transition the frontend to React at some point, so I'm not sure how
+    temporary this is, but I also have never used React so I may leave it. -->
+<h2>Login</h2>
+<form id="loginForm">
+    Email: <input type="text" id="loginEmail"><br>
+    Password: <input type="password" id="loginPassword"><br>
+    <button type="submit">Login</button>
+</form>
+
+<script>
+    // The JavaScript to add functionality to the earlier HTML for login.
+    document.getElementById("loginForm").onsubmit = async (e) => {
+        e.preventDefault();
+
+        const res = await fetch("/api/users/login", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"}, 
+            body: JSON.stringify({
+                // Pretty sure this isn't secure and needs to be worked on.
+                email: document.getElementById("loginEmail").value,
+                password: document.getElementById("loginPassword").value
+            })
+        });
+
+        if (res.ok) {
+            // Just collect the user data for the frontend to utilize.
+            const user = await res.json();
+            localStorage.setItem("userID", user.id);
+
+            /**
+             * May want to change later, I'm not really sure how secure it is
+             * to tell users their user ID instead of just their email or
+             * something. My security experience is very minimal.
+             */
+            alert("Logged in as user: " + user.id);
+
+            // Sends the user to the Dashboard after logging in.
+            window.location.href = "/dashboard.html";
+        } else {
+            /**
+             * Not yet sure what would cause this to happen, but if it does,
+             * I will do my best to resolve it.
+             */
+            alert("Login failed!");
+        }
+    };
+
+    /**
+     * Frankly I'm not certain I'm GOING to need this area right here, but I am
+     * making sure to leave it here to remember it if I DO.
+     */
+    window.onload = () => {
+        // Nothing at the moment.
+    }
+</script>
+
+</body>
+</html>

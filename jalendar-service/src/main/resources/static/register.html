@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<!-- Navigation to the areas I've created. Not the cleanest but I needed
+    something for the time being. -->
+<nav>
+    <a href="/register.html">Register</a>
+    <a href="/login.html">Login</a>
+    <a href="/dashboard.html">Dashboard</a>
+</nav>
+
+<!-- Just the simple HTML display for the Register option. I think I'm going
+    to transition the frontend to React at some point, so I'm not sure how
+    temporary this is, but I also have never used React so I may leave it. -->
+<h2>Register</h2>
+<form id="registerForm">
+    Email: <input type="text" id="email"><br>
+    Password: <input type="password" id="password"><br>
+    <button type="submit">Register</button>
+</form>
+
+<script>
+    // The JavaScript to add functionality to the earlier HTML for registering.
+    document.getElementById("registerForm").onsubmit = async (e) => {
+        e.preventDefault();
+
+        const res = await fetch("/api/users/register", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"}, 
+            body: JSON.stringify({
+                // Pretty sure this isn't secure and needs to be worked on.
+                email: document.getElementById("email").value,
+                password: document.getElementById("password").value
+            })
+        });
+
+        if (res.ok) {
+            // Just collect the user data for the frontend to utilize.
+            const user = await res.json();
+            localStorage.setItem("userID", user.id);
+
+            /**
+             * May want to change later, I'm not really sure how secure it is
+             * to tell users their user ID instead of just their email or
+             * something. My security experience is very minimal.
+             */
+            alert("User registered with ID: " + user.id);
+
+            // Sends the user to the login page after registering.
+            window.location.href = "/login.html";
+        } else {
+            /**
+             * Not yet sure what would cause this to happen, but if it does,
+             * I will do my best to resolve it.
+             */
+            alert("Error");
+        }
+    };
+
+    /**
+     * Frankly I'm not certain I'm GOING to need this area right here, but I am
+     * making sure to leave it here to remember it if I DO.
+     */
+    window.onload = () => {
+        // Nothing at the moment.
+    }
+</script>
+
+</body>
+</html>
