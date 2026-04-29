@@ -8,12 +8,18 @@
     Password: <input type="password" id="password"><br>
     <button type="submit">Register</button>
 </form>
+
 <h2>Login</h2>
 <form id="loginForm">
     Email: <input type="text" id="loginEmail"><br>
     Password: <input type="password" id="loginPassword"><br>
     <button type="submit">Login</button>
 </form>
+
+<button onclick="logout()">Logout</button>
+
+<p id="currentUser"></p>
+
 <h2>Create Task</h2>
 <form id="taskForm">
     Title: <input type="text" id="title"><br>
@@ -43,6 +49,7 @@ document.getElementById("registerForm").onsubmit = async (e) => {
         localStorage.setItem("userID", user.id);
 
         loadTasks();
+        updateCurrentUser();
 
         alert("User registered with ID: " + user.id);
     } else {
@@ -68,6 +75,7 @@ document.getElementById("loginForm").onsubmit = async (e) => {
         localStorage.setItem("userID", user.id);
 
         loadTasks();
+        updateCurrentUser();
 
         alert("Logged in as user: " + user.id);
     } else {
@@ -117,8 +125,31 @@ async function loadTasks() {
         list.appendChild(li);
     });
 }
-if(localStorage.getItem("userID")) {
-    loadTasks();
+
+function logout() {
+    localStorage.removeItem("userID");
+    updateCurrentUser();
+    alert("Logged out successfully!");
+    location.reload();
+}
+
+function updateCurrentUser() {
+    const userID = localStorage.getItem("userID");
+    const display = document.getElementById("currentUser");
+
+    if(userID) {
+        display.textContent = "Logged in as user: " + userID;
+    } else {
+        display.textContent = "Not currently logged in!";
+    }
+}
+
+window.onload = () => {
+    updateCurrentUser();
+
+    if(localStorage.getItem("userID")) {
+        loadTasks();
+    }
 }
 </script>
 
