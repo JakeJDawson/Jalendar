@@ -67,9 +67,25 @@
         list.innerHTML = "";
 
         tasks.forEach(task => {
+            // Create text to display the task, then add it to the list.
             const li = document.createElement("li");
             li.textContent = task.title + " - " + task.description;
             list.appendChild(li);
+
+            // Create a delete button for each task.
+            const button = document.createElement("button");
+            button.textContent = "Delete";
+
+            // Adds the functionality for said delete button.
+            button.onclick = async () => {
+                await fetch(`/api/tasks/${task.id}`, {
+                    method: "DELETE"
+                });
+                loadTasks();
+            }
+
+            // Adds the button to the list.
+            li.appendChild(button);
         });
     }
 
