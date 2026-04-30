@@ -46,9 +46,24 @@ public class TaskController {
 
     // UPDATE
     @PutMapping("/{id}")
-    public Task update(@PathVariable Long id, @RequestBody Task updated) {
-        updated.setId(id);
-        return repo.save(updated);
+    public Task update(@PathVariable Long id,
+        @RequestParam(required = true) Long userID,
+        @RequestBody Task updated) {
+            if(userID == null) {
+                throw new RuntimeException("User must be logged in!");
+            }
+
+            User user = userRepo.findById(userID)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+            Task existing = repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+
+            existing.setTitle(updated.getTitle());
+            existing.setDescription(updated.getDescription());
+
+            existing.setUser(user);
+            return repo.save(existing);
     }
 
     // DELETE

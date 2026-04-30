@@ -67,10 +67,33 @@
         list.innerHTML = "";
 
         tasks.forEach(task => {
-            // Create text to display the task, then add it to the list.
             const li = document.createElement("li");
-            li.textContent = task.title + " - " + task.description;
-            list.appendChild(li);
+
+            // Fields for the title and desc of each task so they can change.
+            const titleInput = document.createElement("input");
+            titleInput.value = task.title;
+            const descInput = document.createElement("input");
+            descInput.value = task.description;
+            
+            // Button to update task based on input information.
+            const saveButton = document.createElement("button");
+            saveButton.textContent = "Save Changes";
+            saveButton.onclick = async () => {
+                await fetch(`/api/tasks/${task.id}?userID=${userID}`, {
+                    method: "PUT",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        title: titleInput.value,
+                        description: descInput.value
+                    })
+                });
+                loadTasks();
+            }
+
+            // Add the previous things to the list.
+            li.appendChild(titleInput);
+            li.appendChild(descInput);
+            li.appendChild(saveButton);
 
             // Create a delete button for each task.
             const button = document.createElement("button");
@@ -86,6 +109,8 @@
 
             // Adds the button to the list.
             li.appendChild(button);
+
+            list.appendChild(li);
         });
     }
 
