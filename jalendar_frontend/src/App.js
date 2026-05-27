@@ -4,11 +4,15 @@ import{BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import Tasks from "./pages/Tasks";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ForceLogin from "./components/ForceLogin";
 
 // Main application.
 function App() {
     // Used to hold, as well as update, the currently logged in user.
     const[userID, setUserID] = useState(null);
+
+    // Simple function to handle logging out.
+    const handleLogout = () => {setUserID(null);};
 
     return(
         <Router>
@@ -25,7 +29,14 @@ function App() {
 
                 <Route
                     path="/tasks"
-                    element={<Tasks userID={userID}/>}
+                    element={
+                        <ForceLogin userID={userID}>
+                            <Tasks
+                                userID={userID}
+                                handleLogout={handleLogout}
+                            />
+                        </ForceLogin>
+                    }
                 />
             </Routes>
         </Router>

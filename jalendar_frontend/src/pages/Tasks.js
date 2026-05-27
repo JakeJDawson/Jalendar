@@ -1,7 +1,10 @@
 // Import statements.
 import{useEffect, useState} from "react";
+import {useNavigate} from "react-router-dom";
 
-function Tasks({userID}) {
+function Tasks({userID, handleLogout}) {
+    // Set up the navigate ability to get to other pages.
+    const navigate = useNavigate();
     // Used to display, as well as update, a list of the user's tasks.
     const[tasks, setTasks] = useState([]);
     // Used to hold the title and description of a new task, and update them.
@@ -20,6 +23,14 @@ function Tasks({userID}) {
                 });
         }
     }, [userID]);
+
+    // Function to slightly modify handleLogout.
+    const logout = () => {
+        // To clean the user state.
+        handleLogout();
+        // To redirect to login.
+        navigate("/");
+    }
 
     // Function that handles the creation AND modification of tasks.
     const handleSubmit = (e) => {
@@ -115,6 +126,9 @@ function Tasks({userID}) {
         <div>
             {/* Simply displays the title of the page. */}
             <h1>Jalendar</h1>
+
+            {/* Logout button. It logs you out. */}
+            <button onClick={logout}>Log out</button>
 
             {/* The input fields and button used for creating new tasks, as
                 well as updating currently existing ones. */}
