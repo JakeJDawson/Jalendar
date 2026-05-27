@@ -38,6 +38,7 @@ function Login({onLogin}) {
             // Go to the tasks page on successful login.
             .then(data => {
                 onLogin(data.id);
+                localStorage.setItem("userID", data.id);
                 setError("");
                 navigate("/tasks");
             })
