@@ -23,14 +23,14 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public User login(@RequestBody UserDTO dto) {
-        User user = userRepo.findByEmail(dto.getEmail());
+    public User login(@RequestBody User loginRequest) {
+        User user = userRepo.findByEmail(loginRequest.getEmail());
 
         if(user == null) {
             throw new RuntimeException("User not found!");
         }
 
-        if(!user.getPassword().equals(dto.getPassword())) {
+        if(!user.getPassword().equals(loginRequest.getPassword())) {
             throw new RuntimeException("Password is incorrect!");
         }
 

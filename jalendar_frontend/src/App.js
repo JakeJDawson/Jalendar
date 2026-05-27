@@ -2,9 +2,12 @@
 import{useEffect, useState} from "react";
 import{BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import Tasks from "./pages/Tasks";
+import Login from "./pages/Login";
 
 // Main application.
 function App() {
+    // Used to hold, as well as update, the currently logged in user.
+    const[userID, setUserID] = useState(null);
     // Used to display, as well as update, a list of the user's tasks.
     const[tasks, setTasks] = useState([]);
     // Used to hold the title and description of a new task, and update them.
@@ -117,7 +120,7 @@ function App() {
             <Routes>
                 <Route
                     path="/"
-                    element={<div>Login page coming soon</div>}
+                    element={<Login onLogin={setUserID}/>}
                 />
 
                 <Route
