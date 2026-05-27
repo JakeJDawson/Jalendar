@@ -1,6 +1,7 @@
 // Import statements.
 import React, {useState} from "react";
 import {useNavigate} from "react-router-dom";
+import {loginUser} from "../services/userService"
 
 function Login({onLogin}) {
     // Set up the navigate ability to get to other pages.
@@ -15,16 +16,7 @@ function Login({onLogin}) {
     const handleLogin = (e) => {
         e.preventDefault();
 
-        fetch("http://localhost:8080/api/users/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                email,
-                password
-            })
-        })
+        loginUser(email, password)
             // Look for an error to display.
             .then(async(res) => {
                 const text = await res.text();
@@ -35,7 +27,7 @@ function Login({onLogin}) {
                 //console.log("Response received:", res);
                 return JSON.parse(text);
             })
-            // Go to the tasks page on successful login.
+            // Go to the tasks page on successful login, and remember userID.
             .then(data => {
                 onLogin(data.id);
                 localStorage.setItem("userID", data.id);

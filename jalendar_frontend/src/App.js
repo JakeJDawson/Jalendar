@@ -1,6 +1,6 @@
 // Import statements.
-import{useEffect, useState} from "react";
-import{BrowserRouter as Router, Routes, Route} from "react-router-dom";
+import {useEffect, useState} from "react";
+import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import Tasks from "./pages/Tasks";
 import Login from "./pages/Login";
 import Register from "./pages/Register";

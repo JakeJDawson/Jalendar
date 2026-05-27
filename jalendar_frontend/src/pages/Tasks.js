@@ -1,6 +1,8 @@
 // Import statements.
-import{useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
+import {getTasks, createTask, updateTask, deleteTask}
+    from "../services/taskService";
 
 function Tasks({userID, handleLogout}) {
     // Set up the navigate ability to get to other pages.
@@ -16,11 +18,7 @@ function Tasks({userID, handleLogout}) {
 
     useEffect(() => {
         if(userID !== null) {
-            fetch(`http://localhost:8080/api/tasks?userID=${userID}`)
-                .then(res => res.json())
-                .then(data => {
-                    setTasks(data)
-                });
+            getTasks(userID).then(setTasks);
         }
     }, [userID]);
 
@@ -45,48 +43,31 @@ function Tasks({userID, handleLogout}) {
          */
         if(editingTaskID) {
             // Update the task in question.
-            fetch(`http://localhost:8080/api/tasks/
-                ${editingTaskID}?userID=${userID}`, {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        title: title,
-                        description: description
-                    })
-                }).then(() => {
-                    // Stop editing a task, return the input fields to blank.
-                    setEditingTaskID(null);
-                    setTitle("");
-                    setDescription("");
+            updateTask(editingTaskID, userID, {
+                title,
+                description
+            }).then(() => {
+                // Stop editing a task, return the input fields to blank.
+                setEditingTaskID(null);
+                setTitle("");
+                setDescription("");
 
-                    // Refresh the displayed list of tasks.
-                    fetch(`http://localhost:8080/api/tasks?userID=${userID}`)
-                        .then(res => res.json())
-                        .then(data => setTasks(data));
-                });
+                // Refresh the displayed list of tasks.
+                return getTasks(userID);
+            }).then(setTasks);
         } else {
             // Add the task entered into the input fields.
-            fetch(`http://localhost:8080/api/tasks?userID=${userID}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    title: title,
-                    description: description
-                })
+            createTask(userID, {
+                title,
+                description
             }).then(() => {
                 // Return the input fields to blank.
                 setTitle("");
                 setDescription("");
 
                 // Refresh the displayed list of tasks.
-                fetch(`http://localhost:8080/api/tasks?userID=${userID}`)
-                    .then(res => res.json())
-                    .then(data => setTasks(data));
-            });
+                return getTasks(userID);
+            }).then(setTasks);
         }
     };
 
@@ -96,14 +77,10 @@ function Tasks({userID, handleLogout}) {
         //const userID = 1;
 
         // Delete the task from the database.
-        fetch(`http://localhost:8080/api/tasks/${taskID}`, {
-            method: "DELETE"
-        }).then(() => {
+        deleteTask(taskID)
             // Refresh the displayed tasks.
-            fetch(`http://localhost:8080/api/tasks?userID=${userID}`)
-                .then(res => res.json())
-                .then(data => setTasks(data));
-        });
+            .then(() => getTasks(userID))
+            .then(setTasks);
     };
 
     // Function which handles what the "edit" button does.

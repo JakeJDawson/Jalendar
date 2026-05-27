@@ -1,6 +1,7 @@
 // Import statements.
 import React, {useState} from "react";
 import {useNavigate} from "react-router-dom";
+import {registerUser} from "../services/userService"
 
 function Register() {
     // Set up the navigate ability to get to other pages.
@@ -13,16 +14,7 @@ function Register() {
     const handleRegister = (e) => {
         e.preventDefault();
 
-        fetch("http://localhost:8080/api/users/register", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                email,
-                password
-            })
-        })
+        registerUser(email, password)
             // Go to the login page on successful registration.
             .then(() => {navigate("/");});
     };
