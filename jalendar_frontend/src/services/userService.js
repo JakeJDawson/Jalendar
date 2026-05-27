@@ -1,24 +1,12 @@
-// Set a URL for the service to use.
-const BASE_URL = "http://localhost:8080/api/users";
+// Import the api for ease of use.
+import { api } from "./api";
 
-// Register user.
+// Register.
 export const registerUser = (email, password) => {
-    return fetch(`${BASE_URL}/register`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email, password })
-    });
+    return api.post("/users/register", {email, password});
 };
 
-// Login user.
+// Login.
 export const loginUser = (email, password) => {
-    return fetch(`${BASE_URL}/login`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email, password })
-    });
+    return api.post("/users/login", {email, password});
 };

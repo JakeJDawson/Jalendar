@@ -1,37 +1,22 @@
-// Set a URL for the service to use.
-const BASE_URL = "http://localhost:8080/api/tasks";
+// Import the api for ease of use.
+import { api } from "./api";
 
-// Get tasks for a user.
+// Get tasks.
 export const getTasks = (userID) => {
-    return fetch(`${BASE_URL}?userID=${userID}`)
-        .then(res => res.json());
+    return api.get(`/tasks?userID=${userID}`);
 };
 
 // Create task.
 export const createTask = (userID, task) => {
-    return fetch(`${BASE_URL}?userID=${userID}`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(task)
-    });
+    return api.post(`/tasks?userID=${userID}`, task);
 };
 
 // Update task.
 export const updateTask = (taskID, userID, task) => {
-    return fetch(`${BASE_URL}/${taskID}?userID=${userID}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(task)
-    });
+    return api.put(`/tasks/${taskID}?userID=${userID}`, task);
 };
 
 // Delete task.
 export const deleteTask = (taskID) => {
-    return fetch(`${BASE_URL}/${taskID}`, {
-        method: "DELETE"
-    });
+    return api.delete(`/tasks/${taskID}`);
 };

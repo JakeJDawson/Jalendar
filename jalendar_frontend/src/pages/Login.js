@@ -17,16 +17,6 @@ function Login({onLogin}) {
         e.preventDefault();
 
         loginUser(email, password)
-            // Look for an error to display.
-            .then(async(res) => {
-                const text = await res.text();
-                if(!res.ok) {
-                    throw new Error(text);
-                }
-                // Debugging line
-                //console.log("Response received:", res);
-                return JSON.parse(text);
-            })
             // Go to the tasks page on successful login, and remember userID.
             .then(data => {
                 onLogin(data.id);
