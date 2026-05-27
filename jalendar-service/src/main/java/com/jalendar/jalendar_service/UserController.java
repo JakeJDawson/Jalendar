@@ -2,6 +2,8 @@ package com.jalendar.jalendar_service;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/api/users")
@@ -17,23 +19,29 @@ public class UserController {
     public User register(@RequestBody UserDTO dto) {
         User user = new User();
         user.setEmail(dto.getEmail());
-        user.setPassword(dto.getPassword());
+        user.setPassword(encoder.encode(dto.getPassword()));
         
         return userRepo.save(user);
     }
 
     @PostMapping("/login")
-    public User login(@RequestBody User loginRequest) {
+    public ResponseEntity<?> login(@RequestBody User loginRequest) {
         User user = userRepo.findByEmail(loginRequest.getEmail());
 
         if(user == null) {
-            throw new RuntimeException("User not found!");
+            return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body("User not found!");
         }
 
-        if(!user.getPassword().equals(loginRequest.getPassword())) {
-            throw new RuntimeException("Password is incorrect!");
+        if(!encoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body("Password is incorrect!");
         }
 
-        return user;
+        return ResponseEntity.ok(
+            new UserLoginResponse(user.getId(), user.getEmail())
+        );
     }
 }

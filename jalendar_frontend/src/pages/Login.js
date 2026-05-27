@@ -8,6 +8,8 @@ function Login({onLogin}) {
     // Set up variables to hold and functions to set email and password.
     const[email, setEmail] = useState("");
     const[password, setPassword] = useState("");
+    // Set up variable and function to hold and set login errors.
+    const[error, setError] = useState("");
 
     // The case which actually handles the login.
     const handleLogin = (e) => {
@@ -25,18 +27,22 @@ function Login({onLogin}) {
         })
             // Look for an error to display.
             .then(async(res) => {
+                const text = await res.text();
                 if(!res.ok) {
-                    const text = await res.text();
                     throw new Error(text);
                 }
                 // Debugging line
                 //console.log("Response received:", res);
-                return res.json();
+                return JSON.parse(text);
             })
             // Go to the tasks page on successful login.
-            .then(data => {onLogin(data.id); navigate("/tasks");})
+            .then(data => {
+                onLogin(data.id);
+                setError("");
+                navigate("/tasks");
+            })
             // Display an error if there is one.
-            .catch(err => {console.error("Login failed:", err.message);});
+            .catch(err => {setError(err.message)});
     };
 
     // The HTML display of the login page.
@@ -59,8 +65,14 @@ function Login({onLogin}) {
                     onChange = {(e) => setPassword(e.target.value)}
                 />
 
-                <button type="submit" onClick={handleLogin}>Login</button>
+                <button type="submit">Login</button>
             </form>
+
+            {error && <p style={{color: "red"}}>{error}</p>}
+
+            <button onClick={() => navigate("/register")}>
+                Sign up!
+            </button>
         </div>
     );
 }

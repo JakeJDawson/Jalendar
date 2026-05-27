@@ -11,12 +11,7 @@ public class JalendarServiceApplication {
 	@Bean
 	CommandLineRunner init(UserRepository userRepo) {
 		return args -> {
-			if(userRepo.count() == 0) {
-				User user = new User();
-				user.setEmail("test@test.com");
-				user.setPassword("password");
-				userRepo.save(user);
-			}
+			// Placeholder from old debugging code
 		};
 	}
 
