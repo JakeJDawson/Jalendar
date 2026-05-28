@@ -2,18 +2,18 @@
 import { api } from "./api";
 
 // Get tasks.
-export const getTasks = (userID) => {
-    return api.get(`/tasks?userID=${userID}`);
+export const getTasks = () => {
+    return api.get("/tasks");
 };
 
 // Create task.
-export const createTask = (userID, task) => {
-    return api.post(`/tasks?userID=${userID}`, task);
+export const createTask = (task) => {
+    return api.post("/tasks", task);
 };
 
 // Update task.
-export const updateTask = (taskID, userID, task) => {
-    return api.put(`/tasks/${taskID}?userID=${userID}`, task);
+export const updateTask = (taskID, task) => {
+    return api.put(`/tasks/${taskID}`, task);
 };
 
 // Delete task.

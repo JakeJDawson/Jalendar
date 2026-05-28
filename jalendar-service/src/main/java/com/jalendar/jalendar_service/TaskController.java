@@ -1,73 +1,74 @@
 package com.jalendar.jalendar_service;
 
+// Import statements.
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/tasks")
 public class TaskController {
-    
+    // Basically, the controller needs database access to tasks and users.
     private final TaskRepository repo;
     private final UserRepository userRepo;
-
     public TaskController(TaskRepository repo, UserRepository userRepo) {
         this.repo = repo;
         this.userRepo = userRepo;
     }
 
-    // CREATE
+    // Determines the current user using JWT authentication.
+    private User getCurrentUser() {
+        Authentication auth = SecurityContextHolder.getContext()
+            .getAuthentication();
+        String email = (String) auth.getPrincipal();
+        return userRepo.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    // Create a task.
     @PostMapping
-    public Task create(@RequestParam(required = true) Long userID,
-        @RequestBody Task task) {
-            if(userID == null) {
-                throw new RuntimeException("User must be logged in!");
-            }
-
-            User user = userRepo.findById(userID)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-            task.setUser(user);
-            return repo.save(task);
+    public Task create(@RequestBody Task task) {
+        User user = getCurrentUser();
+        task.setUser(user);
+        return repo.save(task);
     }
 
-    // READ ALL
+    // Get all tasks attached to this user.
     @GetMapping
-    public List<Task> getByUser(@RequestParam Long userID) {
-        return repo.findByUserId(userID);
+    public List<Task> getByUser() {
+        User user = getCurrentUser();
+        return repo.findByUser(user);
     }
 
-    // READ ONE
+    // Get a specific task by ID.
     @GetMapping("/{id}")
     public Task getById(@PathVariable Long id) {
         return repo.findById(id).orElse(null);
     }
 
-    // UPDATE
+    // Update a specific task by ID.
+    /**
+     * It is worth noting that analysis of my code leads me to believe it may
+     * be possible for someone more clever than myself to modify tasks
+     * belonging to other users, if they knew enough about HTML and databases,
+     * so I should probably add some code to enforce the specific user at some
+     * point here.
+     */
     @PutMapping("/{id}")
-    public Task update(@PathVariable Long id,
-        @RequestParam(required = true) Long userID,
-        @RequestBody Task updated) {
-            if(userID == null) {
-                throw new RuntimeException("User must be logged in!");
-            }
-
-            User user = userRepo.findById(userID)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
+    public Task update(@PathVariable Long id, @RequestBody Task updated) {
+            User user = getCurrentUser();
             Task existing = repo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
-
             existing.setTitle(updated.getTitle());
             existing.setDescription(updated.getDescription());
-
             existing.setUser(user);
             return repo.save(existing);
     }
 
-    // DELETE
+    // Delete a specific task by ID.
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         repo.deleteById(id);

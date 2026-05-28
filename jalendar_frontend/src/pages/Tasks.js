@@ -4,7 +4,7 @@ import {useNavigate} from "react-router-dom";
 import {getTasks, createTask, updateTask, deleteTask}
     from "../services/taskService";
 
-function Tasks({userID, handleLogout}) {
+function Tasks({handleLogout}) {
     // Set up the navigate ability to get to other pages.
     const navigate = useNavigate();
     // Used to display, as well as update, a list of the user's tasks.
@@ -16,11 +16,10 @@ function Tasks({userID, handleLogout}) {
     // Currently used to determine whether the user is updating a task or not.
     const[editingTaskID, setEditingTaskID] = useState(null);
 
+    // Updates the tasks to get them to show initially.
     useEffect(() => {
-        if(userID !== null) {
-            getTasks(userID).then(setTasks);
-        }
-    }, [userID]);
+        getTasks().then(setTasks);
+    }, []);
 
     // Function to slightly modify handleLogout.
     const logout = () => {
@@ -43,7 +42,7 @@ function Tasks({userID, handleLogout}) {
          */
         if(editingTaskID) {
             // Update the task in question.
-            updateTask(editingTaskID, userID, {
+            updateTask(editingTaskID, {
                 title,
                 description
             }).then(() => {
@@ -53,11 +52,11 @@ function Tasks({userID, handleLogout}) {
                 setDescription("");
 
                 // Refresh the displayed list of tasks.
-                return getTasks(userID);
+                return getTasks();
             }).then(setTasks);
         } else {
             // Add the task entered into the input fields.
-            createTask(userID, {
+            createTask({
                 title,
                 description
             }).then(() => {
@@ -66,7 +65,7 @@ function Tasks({userID, handleLogout}) {
                 setDescription("");
 
                 // Refresh the displayed list of tasks.
-                return getTasks(userID);
+                return getTasks();
             }).then(setTasks);
         }
     };
@@ -79,7 +78,7 @@ function Tasks({userID, handleLogout}) {
         // Delete the task from the database.
         deleteTask(taskID)
             // Refresh the displayed tasks.
-            .then(() => getTasks(userID))
+            .then(() => getTasks())
             .then(setTasks);
     };
 

@@ -3,7 +3,7 @@ import React, {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {loginUser} from "../services/userService"
 
-function Login({onLogin}) {
+function Login() {
     // Set up the navigate ability to get to other pages.
     const navigate = useNavigate();
     // Set up variables to hold and functions to set email and password.
@@ -19,8 +19,8 @@ function Login({onLogin}) {
         loginUser(email, password)
             // Go to the tasks page on successful login, and remember userID.
             .then(data => {
-                onLogin(data.id);
-                localStorage.setItem("userID", data.id);
+                const token = data.token;
+                localStorage.setItem("token", token);
                 setError("");
                 navigate("/tasks");
             })

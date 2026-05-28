@@ -8,15 +8,13 @@ import ForceLogin from "./components/ForceLogin";
 
 // Main application.
 function App() {
-    // Used to hold, as well as update, the currently logged in user.
-    const[userID, setUserID] = useState(() => {
-        return localStorage.getItem("userID");
-    });
+    // Used to hold the current login token.
+    const token = localStorage.getItem("token");
 
     // Simple function to handle logging out.
     const handleLogout = () => {
-        setUserID(null);
-        localStorage.removeItem("userID");
+        //setUserID(null);
+        localStorage.removeItem("token");
     };
 
     return(
