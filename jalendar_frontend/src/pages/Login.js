@@ -16,6 +16,8 @@ function Login() {
     const handleLogin = (e) => {
         e.preventDefault();
 
+        localStorage.removeItem("token");
+
         loginUser(email, password)
             // Go to the tasks page on successful login, and remember userID.
             .then(data => {

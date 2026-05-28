@@ -20,7 +20,7 @@ function ForceLogin({children}) {
      * more secure if I confirm that token is VALID first, before giving the go
      * ahead.
      */
-    if(!token) {
+    if(!token || token === "null") {
         return <Navigate to="/" replace />;
     }
 

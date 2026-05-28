@@ -22,7 +22,7 @@ function App() {
             <Routes>
                 <Route
                     path="/"
-                    element={<Login onLogin={setUserID}/>}
+                    element={<Login/>}
                 />
 
                 <Route
@@ -33,9 +33,8 @@ function App() {
                 <Route
                     path="/tasks"
                     element={
-                        <ForceLogin userID={userID}>
+                        <ForceLogin>
                             <Tasks
-                                userID={userID}
                                 handleLogout={handleLogout}
                             />
                         </ForceLogin>

@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import java.util.Map;
 
 @RestController
 // All endpoints here are prefixed with /api/users
@@ -45,7 +46,7 @@ public class UserController {
         if(!encoder.matches(loginRequest.getPassword(), user.getPassword())) {
             return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
-                .body("Password is incorrect!");
+                .body(Map.of("message", "Password is incorrect!"));
         }
 
         // Generate JWT token.
